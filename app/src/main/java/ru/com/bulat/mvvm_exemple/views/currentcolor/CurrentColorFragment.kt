@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import ru.com.bulat.foundation.views.BaseFragment
+import ru.com.bulat.foundation.views.BaseScreen
+import ru.com.bulat.foundation.views.screenViewModel
 import ru.com.bulat.mvvm_exemple.databinding.FragmentCurrentColorBinding
-import ru.com.bulat.mvvm_exemple.views.base.BaseFragment
-import ru.com.bulat.mvvm_exemple.views.base.BaseScreen
-import ru.com.bulat.mvvm_exemple.views.base.screenViewModel
 
 class CurrentColorFragment : BaseFragment() {
 

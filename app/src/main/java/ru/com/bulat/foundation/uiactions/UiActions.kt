@@ -1,4 +1,4 @@
-package ru.com.bulat.mvvm_exemple.views
+package ru.com.bulat.foundation.uiactions
 
 /**
  * Common actions that can be performed in the view-model

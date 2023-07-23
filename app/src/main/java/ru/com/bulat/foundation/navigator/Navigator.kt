@@ -1,6 +1,6 @@
-package ru.com.bulat.mvvm_exemple.views
+package ru.com.bulat.foundation.navigator
 
-import ru.com.bulat.mvvm_exemple.views.base.BaseScreen
+import ru.com.bulat.foundation.views.BaseScreen
 
 /**
  * Navigation for your application

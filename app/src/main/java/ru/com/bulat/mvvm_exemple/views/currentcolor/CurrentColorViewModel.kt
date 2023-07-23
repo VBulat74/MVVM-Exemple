@@ -2,13 +2,13 @@ package ru.com.bulat.mvvm_exemple.views.currentcolor
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ru.com.bulat.foundation.navigator.Navigator
+import ru.com.bulat.foundation.uiactions.UiActions
+import ru.com.bulat.foundation.views.BaseViewModel
 import ru.com.bulat.mvvm_exemple.R
 import ru.com.bulat.mvvm_exemple.model.colors.ColorListener
 import ru.com.bulat.mvvm_exemple.model.colors.ColorsRepository
 import ru.com.bulat.mvvm_exemple.model.colors.NamedColor
-import ru.com.bulat.mvvm_exemple.views.Navigator
-import ru.com.bulat.mvvm_exemple.views.UiActions
-import ru.com.bulat.mvvm_exemple.views.base.BaseViewModel
 import ru.com.bulat.mvvm_exemple.views.changecolor.ChangeColorFragment
 
 class CurrentColorViewModel(

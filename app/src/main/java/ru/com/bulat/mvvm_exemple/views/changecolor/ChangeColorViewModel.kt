@@ -4,15 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import ru.com.bulat.foundation.navigator.Navigator
+import ru.com.bulat.foundation.uiactions.UiActions
+import ru.com.bulat.foundation.views.BaseViewModel
 import ru.com.bulat.mvvm_exemple.R
 import ru.com.bulat.mvvm_exemple.model.colors.ColorsRepository
 import ru.com.bulat.mvvm_exemple.model.colors.NamedColor
-import ru.com.bulat.mvvm_exemple.views.Navigator
-import ru.com.bulat.mvvm_exemple.views.UiActions
-import ru.com.bulat.mvvm_exemple.views.base.BaseViewModel
+import ru.com.bulat.mvvm_exemple.views.changecolor.ChangeColorFragment.*
 
 class ChangeColorViewModel(
-    screen: ChangeColorFragment.Screen,
+    screen: Screen,
     private val navigator: Navigator,
     private val uiActions: UiActions,
     private val colorsRepository: ColorsRepository,

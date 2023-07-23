@@ -1,7 +1,6 @@
-package ru.com.bulat.mvvm_exemple.views
+package ru.com.bulat.foundation.views
 
 
-import ru.com.bulat.mvvm_exemple.views.base.BaseFragment
 /**
  * If your fragment wants to show custom screen title in the toolbar, implement this
  * interface and override [getScreenTitle] method.

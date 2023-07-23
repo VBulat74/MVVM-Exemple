@@ -1,4 +1,4 @@
-package ru.com.bulat.mvvm_exemple.utils
+package ru.com.bulat.foundation.utils
 
 import androidx.lifecycle.LiveData
 

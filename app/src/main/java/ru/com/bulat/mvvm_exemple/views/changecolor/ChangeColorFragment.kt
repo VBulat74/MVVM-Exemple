@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.recyclerview.widget.GridLayoutManager
+import ru.com.bulat.foundation.views.BaseFragment
+import ru.com.bulat.foundation.views.BaseScreen
+import ru.com.bulat.foundation.views.HasScreenTitle
+import ru.com.bulat.foundation.views.screenViewModel
 import ru.com.bulat.mvvm_exemple.R
 import ru.com.bulat.mvvm_exemple.databinding.FragmentChangeColorBinding
-import ru.com.bulat.mvvm_exemple.views.HasScreenTitle
-import ru.com.bulat.mvvm_exemple.views.base.BaseFragment
-import ru.com.bulat.mvvm_exemple.views.base.BaseScreen
-import ru.com.bulat.mvvm_exemple.views.base.screenViewModel
 
 /**
  * Screen for changing color.

@@ -1,9 +1,9 @@
-package ru.com.bulat.mvvm_exemple.views.base
+package ru.com.bulat.foundation.views
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.com.bulat.mvvm_exemple.utils.Event
+import ru.com.bulat.foundation.utils.Event
 
 typealias LiveEvent<T> = LiveData<Event<T>>
 typealias MutableLiveEvent<T> = MutableLiveData<Event<T>>
