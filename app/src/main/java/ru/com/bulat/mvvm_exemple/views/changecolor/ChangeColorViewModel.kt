@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.navigator.Navigator
 import ru.com.bulat.foundation.uiactions.UiActions
 import ru.com.bulat.foundation.views.BaseViewModel
+import ru.com.bulat.foundation.views.MutableLiveResult
 import ru.com.bulat.mvvm_exemple.R
 import ru.com.bulat.mvvm_exemple.model.colors.ColorsRepository
 import ru.com.bulat.mvvm_exemple.model.colors.NamedColor
@@ -21,7 +23,7 @@ class ChangeColorViewModel(
 ) : BaseViewModel(), ColorsAdapter.Listener {
 
     // input sources
-    private val _availableColors = MutableLiveData<List<NamedColor>>()
+    private val _availableColors = MutableLiveResult<List<NamedColor>>(PendingResult())
     private val _currentColorId = savedStateHandle.getLiveData("currentColorId", screen.currentColorId)
 
     // main destination (contains merged values from _availableColors & _currentColorId)
