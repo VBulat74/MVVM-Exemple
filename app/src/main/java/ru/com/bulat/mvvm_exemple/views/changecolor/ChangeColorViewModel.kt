@@ -46,6 +46,7 @@ class ChangeColorViewModel(
     }
 
     fun onSavePressed() {
+        //
         val currentColorId = _currentColorId.value ?: return
         val currentColor = colorsRepository.getById(currentColorId)
         colorsRepository.currentColor = currentColor
