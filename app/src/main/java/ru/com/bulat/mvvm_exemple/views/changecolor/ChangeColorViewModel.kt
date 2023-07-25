@@ -10,6 +10,7 @@ import ru.com.bulat.foundation.model.FinalResult
 import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.model.SuccessResult
 import ru.com.bulat.foundation.model.tasks.TasksFactory
+import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
 import ru.com.bulat.foundation.navigator.Navigator
 import ru.com.bulat.foundation.uiactions.UiActions
 import ru.com.bulat.foundation.views.BaseViewModel
@@ -27,8 +28,9 @@ class ChangeColorViewModel(
     private val uiActions: UiActions,
     private val colorsRepository: ColorsRepository,
     private val tasksFactory: TasksFactory,
-    savedStateHandle: SavedStateHandle
-) : BaseViewModel(), ColorsAdapter.Listener {
+    savedStateHandle: SavedStateHandle,
+    dispatcher: Dispatcher,
+) : BaseViewModel(dispatcher), ColorsAdapter.Listener {
 
     // input sources
     private val _availableColors = MutableLiveResult<List<NamedColor>>(PendingResult())

@@ -8,6 +8,7 @@ import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.model.Result
 import ru.com.bulat.foundation.model.tasks.Task
 import ru.com.bulat.foundation.model.tasks.TaskListener
+import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
 import ru.com.bulat.foundation.utils.Event
 
 typealias LiveEvent<T> = LiveData<Event<T>>
@@ -20,7 +21,9 @@ typealias MediatorLiveResult<T> = MediatorLiveData<Result<T>>
 /**
  * Base class for all view-models.
  */
-open class BaseViewModel : ViewModel() {
+open class BaseViewModel (
+    private val dispatcher: Dispatcher
+) : ViewModel() {
 
     private val tasks = mutableSetOf<Task<*>>()
 
@@ -40,7 +43,7 @@ open class BaseViewModel : ViewModel() {
 
     fun <T> Task<T>.safeEnqueue (listener: TaskListener<T>? = null) {
         tasks.add(this)
-        this.enqueue {
+        this.enqueue(dispatcher) {
             tasks.remove(this)
             listener?.invoke(it)
         }

@@ -4,6 +4,7 @@ import android.os.Looper
 import ru.com.bulat.foundation.model.ErrorResult
 import ru.com.bulat.foundation.model.FinalResult
 import ru.com.bulat.foundation.model.SuccessResult
+import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
 import java.lang.Exception
 import android.os.Handler as Handler
 
@@ -25,7 +26,7 @@ class SimpleTasksFactory : TasksFactory {
             return body()
         }
 
-        override fun enqueue(listener: TaskListener<T>) {
+        override fun enqueue(dispatcher: Dispatcher, listener: TaskListener<T>) {
             thread = Thread {
                 try {
                     val data = body()

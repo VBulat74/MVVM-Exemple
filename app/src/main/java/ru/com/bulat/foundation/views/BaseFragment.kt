@@ -32,7 +32,7 @@ abstract class BaseFragment : Fragment() {
     ) {
         root.children.forEach { it.visibility = View.GONE }
         when(result) {
-            is SuccessResult -> onSuccess(result.data as T)
+            is SuccessResult -> onSuccess(result.data)
             is ErrorResult -> onError(result.exception)
             is PendingResult -> onPending()
         }
