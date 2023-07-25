@@ -4,10 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import ru.com.bulat.foundation.model.ErrorResult
 import ru.com.bulat.foundation.model.PendingResult
+import ru.com.bulat.foundation.model.SuccessResult
 import ru.com.bulat.foundation.navigator.Navigator
 import ru.com.bulat.foundation.uiactions.UiActions
 import ru.com.bulat.foundation.views.BaseViewModel
+import ru.com.bulat.foundation.views.LiveResult
+import ru.com.bulat.foundation.views.MediatorLiveResult
 import ru.com.bulat.foundation.views.MutableLiveResult
 import ru.com.bulat.mvvm_exemple.R
 import ru.com.bulat.mvvm_exemple.model.colors.ColorsRepository
@@ -27,16 +35,26 @@ class ChangeColorViewModel(
     private val _currentColorId = savedStateHandle.getLiveData("currentColorId", screen.currentColorId)
 
     // main destination (contains merged values from _availableColors & _currentColorId)
-    private val _colorsList = MediatorLiveData<List<NamedColorListItem>>()
-    val colorsList: LiveData<List<NamedColorListItem>> = _colorsList
+    private val _colorsList = MediatorLiveResult<List<NamedColorListItem>>(PendingResult())
+    val colorsList: LiveResult<List<NamedColorListItem>> = _colorsList
 
     // side destination, also the same result can be achieved by using Transformations.map() function.
-    private val _screenTitle = MutableLiveData<String>()
-    val screenTitle: LiveData<String> = _screenTitle
+    val screenTitle: LiveData<String> = colorsList.map { result ->
+        if (result is SuccessResult) {
+            val currentColor = result.data.first {it.selected}
+            uiActions.getString(R.string.change_color_screen_title, currentColor.namedColor.name)
+        } else {
+            uiActions.getString(R.string.change_color_screen_title_simple)
+        }
+    }
 
     init {
-        _availableColors.value = colorsRepository.getAvailableColors()
-        // initializing MediatorLiveData
+        viewModelScope.launch {
+            delay(2000)
+            _availableColors.value = ErrorResult(RuntimeException())
+            //_availableColors.value = SuccessResult(colorsRepository.getAvailableColors())
+            // initializing MediatorLiveData
+        }
         _colorsList.addSource(_availableColors) { mergeSources() }
         _colorsList.addSource(_currentColorId) { mergeSources() }
     }
@@ -67,9 +85,20 @@ class ChangeColorViewModel(
     private fun mergeSources() {
         val colors = _availableColors.value ?: return
         val currentColorId = _currentColorId.value ?: return
-        val currentColor = colors.first { it.id == currentColorId }
-        _colorsList.value = colors.map { NamedColorListItem(it, currentColorId == it.id) }
-        _screenTitle.value = uiActions.getString(R.string.change_color_screen_title, currentColor.name)
+
+        _colorsList.value = colors.map {colorsList->
+            colorsList.map { NamedColorListItem(it, currentColorId == it.id) }
+        }
+//        val currentColor = colors.first { it.id == currentColorId }
+//        _screenTitle.value = uiActions.getString(R.string.change_color_screen_title, currentColor.name)
+    }
+
+    fun tryAgain() {
+        viewModelScope.launch {
+            _availableColors.postValue(PendingResult())
+            delay(2000)
+            _availableColors.postValue(SuccessResult(colorsRepository.getAvailableColors()))
+        }
     }
 
 }
