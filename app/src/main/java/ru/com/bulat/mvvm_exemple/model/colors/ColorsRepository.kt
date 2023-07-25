@@ -1,6 +1,7 @@
 package ru.com.bulat.mvvm_exemple.model.colors
 
 import ru.com.bulat.foundation.model.Repository
+import ru.com.bulat.foundation.model.tasks.Task
 
 typealias ColorListener = (NamedColor) -> Unit
 
@@ -11,17 +12,25 @@ typealias ColorListener = (NamedColor) -> Unit
  */
 interface ColorsRepository : Repository {
 
-    var currentColor: NamedColor
-
     /**
      * Get the list of all available colors that may be chosen by the user.
      */
-    fun getAvailableColors(): List<NamedColor>
+    fun getAvailableColors(): Task<List<NamedColor>>
 
     /**
      * Get the color content by its ID
      */
-    fun getById(id: Long): NamedColor
+    fun getById(id: Long): Task<NamedColor>
+
+    /*
+    * Get the current Color
+     */
+    fun getCurrentColor() : Task<NamedColor>
+
+    /*
+    * Set the specified Color as current
+    * */
+    fun setCurrentColor(color: NamedColor) : Task<Unit>
 
     /**
      * Listen for the current color changes.

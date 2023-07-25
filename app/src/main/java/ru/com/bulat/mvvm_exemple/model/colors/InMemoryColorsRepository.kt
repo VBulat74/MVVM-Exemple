@@ -1,35 +1,49 @@
 package ru.com.bulat.mvvm_exemple.model.colors
 
 import android.graphics.Color
+import ru.com.bulat.foundation.model.tasks.Task
+import ru.com.bulat.foundation.model.tasks.TasksFactory
 
 /**
  * Simple in-memory implementation of [ColorsRepository]
  */
-class InMemoryColorsRepository : ColorsRepository {
+class InMemoryColorsRepository (
+    private val tasksFactory: TasksFactory
+) : ColorsRepository {
 
-    override var currentColor: NamedColor = AVAILABLE_COLORS[0]
-        set(value) {
-            if (field != value) {
-                field = value
-                listeners.forEach { it(value) }
-            }
-        }
+    private var currentColor : NamedColor = AVAILABLE_COLORS[0]
 
     private val listeners = mutableSetOf<ColorListener>()
 
-    override fun getAvailableColors(): List<NamedColor> = AVAILABLE_COLORS
-
     override fun addListener(listener: ColorListener) {
         listeners += listener
-        listener(currentColor)
     }
 
     override fun removeListener(listener: ColorListener) {
         listeners -= listener
     }
 
-    override fun getById(id: Long): NamedColor {
-        return AVAILABLE_COLORS.first { it.id == id }
+    override fun getAvailableColors(): Task<List<NamedColor>> = tasksFactory.async {
+        Thread.sleep(1000)
+        return@async AVAILABLE_COLORS
+    }
+
+    override fun getById(id: Long): Task<NamedColor>  = tasksFactory.async {
+        Thread.sleep(1000)
+        return@async AVAILABLE_COLORS.first { it.id == id }
+    }
+
+    override fun getCurrentColor(): Task<NamedColor>  = tasksFactory.async {
+        Thread.sleep(1000)
+        return@async currentColor
+    }
+
+    override fun setCurrentColor(color: NamedColor): Task<Unit>  = tasksFactory.async {
+        Thread.sleep(1000)
+        if (currentColor != color){
+            currentColor = color
+            listeners.forEach { it(color) }
+        }
     }
 
     companion object {

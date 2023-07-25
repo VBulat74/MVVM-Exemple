@@ -19,6 +19,7 @@
     <string name="save">Save</string>
     <string name="selected">Selected</string>
     <string name="error_please_try_again_leter">Error! Please try again leter</string>
+    <string name="error_message">Error!</string>
     <string name="try_again">Try Again</string>
 
 </resources>

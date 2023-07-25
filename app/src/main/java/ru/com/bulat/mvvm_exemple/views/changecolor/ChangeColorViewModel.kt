@@ -5,12 +5,11 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ru.com.bulat.foundation.model.ErrorResult
+import ru.com.bulat.foundation.model.FinalResult
 import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.model.SuccessResult
+import ru.com.bulat.foundation.model.tasks.TasksFactory
 import ru.com.bulat.foundation.navigator.Navigator
 import ru.com.bulat.foundation.uiactions.UiActions
 import ru.com.bulat.foundation.views.BaseViewModel
@@ -27,6 +26,7 @@ class ChangeColorViewModel(
     private val navigator: Navigator,
     private val uiActions: UiActions,
     private val colorsRepository: ColorsRepository,
+    private val tasksFactory: TasksFactory,
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel(), ColorsAdapter.Listener {
 
@@ -50,12 +50,7 @@ class ChangeColorViewModel(
     }
 
     init {
-        viewModelScope.launch {
-            delay(2000)
-            //_availableColors.value = ErrorResult(RuntimeException())
-            _availableColors.value = SuccessResult(colorsRepository.getAvailableColors())
-            // initializing MediatorLiveData
-        }
+        load()
         _viewState.addSource(_availableColors) { mergeSources() }
         _viewState.addSource(_currentColorId) { mergeSources() }
         _viewState.addSource(_saveInProgress) {mergeSources()}
@@ -67,15 +62,15 @@ class ChangeColorViewModel(
     }
 
     fun onSavePressed() {
-        viewModelScope.launch {
-            _saveInProgress.postValue(true)
-            delay(2000)
-            val currentColorId = _currentColorId.value ?: return@launch
-            val currentColor = colorsRepository.getById(currentColorId)
-            colorsRepository.currentColor = currentColor
-            navigator.goBack(result = currentColor)
-        }
 
+        _saveInProgress.postValue(true)
+        tasksFactory.async {
+            val currentColorId = _currentColorId.value ?: throw IllegalStateException("Color ID should by NULL")
+            val currentColor = colorsRepository.getById(currentColorId).await()
+            colorsRepository.setCurrentColor(currentColor).await()
+            return@async currentColor
+        }
+            .safeEnqueue(::onSaved)
     }
 
     fun onCancelPressed() {
@@ -108,11 +103,19 @@ class ChangeColorViewModel(
     }
 
     fun tryAgain() {
-        viewModelScope.launch {
-            _availableColors.postValue(PendingResult())
-            delay(2000)
-            _availableColors.postValue(SuccessResult(colorsRepository.getAvailableColors()))
+        load()
+    }
+
+    private fun onSaved(result: FinalResult<NamedColor>){
+        _saveInProgress.value = false
+        when(result){
+            is SuccessResult ->{navigator.goBack(result.data)}
+            is ErrorResult -> uiActions.toast(uiActions.getString(R.string.error_message))
         }
+    }
+
+    private fun load() {
+        colorsRepository.getAvailableColors().into(_availableColors)
     }
 
     data class ViewState (
@@ -122,5 +125,4 @@ class ChangeColorViewModel(
         val showSaveProgressBar : Boolean,
 
     )
-
 }
