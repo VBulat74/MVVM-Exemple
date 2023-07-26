@@ -3,20 +3,40 @@ package ru.com.bulat.foundation.model.tasks
 import ru.com.bulat.foundation.model.FinalResult
 import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
 
-typealias TaskListener <T> = (FinalResult<T>) -> Unit
+typealias TaskListener<T> = (FinalResult<T>) -> Unit
 
 class CancelledException(
-    originException : Exception? = null
+    originException: Exception? = null
 ) : Exception(originException)
 
-interface Task <T> {
-    fun await() : T
+/**
+ * Base interface for all async operations.
+ */
+interface Task<T> {
 
-    /*
-    * Listener called in ,ain thread
-    */
+    /**
+     * Blocking method for waiting and getting results.
+     * Throws exception in case of error.
+     * Task may be executed only once.
+     * @throws [IllegalStateException] if task has been already executed
+     * @throws [CancelledException] if task has been cancelled
+     */
+    fun await(): T
 
-    fun enqueue (dispatcher : Dispatcher, listener: TaskListener<T>)
+    /**
+     * Non-blocking method for listening task results.
+     * If task is cancelled before finishing, listener is not called.
+     * If task is cancelled before calling this method, task is not executed.
+     * Task may be executed only once.
+     *
+     * Listener is called via the specified dispatcher. Usually it is [MainThreadDispatcher]
+     * @throws [IllegalStateException] if task has been already executed.
+     */
+    fun enqueue(dispatcher: Dispatcher, listener: TaskListener<T>)
 
+    /**
+     * Cancel this task and remove listener assigned by [enqueue].
+     */
     fun cancel()
+
 }

@@ -11,6 +11,10 @@ import ru.com.bulat.foundation.utils.delegate.Await
  * Base class for easier creation of new tasks.
  * Provides 2 methods which should be implemented: [doEnqueue] and [doCancel]
  */
+/**
+ * Base class for easier creation of new tasks.
+ * Provides 2 methods which should be implemented: [doEnqueue] and [doCancel]
+ */
 abstract class AbstractTask<T> : Task<T> {
 
     private var finalResult by Await<FinalResult<T>>()

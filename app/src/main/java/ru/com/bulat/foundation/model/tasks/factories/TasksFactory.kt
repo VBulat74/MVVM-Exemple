@@ -4,8 +4,14 @@ import ru.com.bulat.foundation.model.tasks.Task
 
 typealias TaskBody<T> = () -> T
 
-interface TasksFactory  {
+/**
+ * Factory for creating async task instances ([Task]) from synchronous code defined by [TaskBody]
+ */
+interface TasksFactory {
 
-    fun <T> async (body: TaskBody<T>) : Task<T>
+    /**
+     * Create a new [Task] instance from the specified body.
+     */
+    fun <T> async(body: TaskBody<T>): Task<T>
 
 }

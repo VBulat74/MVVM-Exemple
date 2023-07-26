@@ -21,11 +21,16 @@ typealias MediatorLiveResult<T> = MediatorLiveData<Result<T>>
 /**
  * Base class for all view-models.
  */
-open class BaseViewModel (
+open class BaseViewModel(
     private val dispatcher: Dispatcher
 ) : ViewModel() {
 
     private val tasks = mutableSetOf<Task<*>>()
+
+    override fun onCleared() {
+        super.onCleared()
+        clearTasks()
+    }
 
     /**
      * Override this method in child classes if you want to listen for results
@@ -35,12 +40,20 @@ open class BaseViewModel (
 
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    /**
+     * Override this method in child classes if you want to control go-back behaviour.
+     * Return `true` if you want to abort closing this screen
+     */
+    open fun onBackPressed(): Boolean {
         clearTasks()
+        return false
     }
 
-    fun <T> Task<T>.safeEnqueue (listener: TaskListener<T>? = null) {
+    /**
+     * Launch task asynchronously, listen for its result and
+     * automatically unsubscribe the listener in case of view-model destroying.
+     */
+    fun <T> Task<T>.safeEnqueue(listener: TaskListener<T>? = null) {
         tasks.add(this)
         this.enqueue(dispatcher) {
             tasks.remove(this)
@@ -48,15 +61,16 @@ open class BaseViewModel (
         }
     }
 
+    /**
+     * Launch task asynchronously and map its result to the specified
+     * [liveResult].
+     * Task is cancelled automatically if view-model is going to be destroyed.
+     */
     fun <T> Task<T>.into(liveResult: MutableLiveResult<T>) {
         liveResult.value = PendingResult()
         this.safeEnqueue {
             liveResult.value = it
         }
-    }
-
-    fun onBackPressed(){
-        clearTasks()
     }
 
     private fun clearTasks() {
