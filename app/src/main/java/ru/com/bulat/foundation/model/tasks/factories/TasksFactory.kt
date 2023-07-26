@@ -1,4 +1,6 @@
-package ru.com.bulat.foundation.model.tasks
+package ru.com.bulat.foundation.model.tasks.factories
+
+import ru.com.bulat.foundation.model.tasks.Task
 
 typealias TaskBody<T> = () -> T
 

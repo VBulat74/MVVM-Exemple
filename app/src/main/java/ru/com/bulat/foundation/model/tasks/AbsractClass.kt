@@ -4,6 +4,7 @@ import ru.com.bulat.foundation.model.ErrorResult
 import ru.com.bulat.foundation.model.FinalResult
 import ru.com.bulat.foundation.model.SuccessResult
 import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
+import ru.com.bulat.foundation.model.tasks.factories.TaskBody
 import ru.com.bulat.foundation.utils.delegate.Await
 
 /**

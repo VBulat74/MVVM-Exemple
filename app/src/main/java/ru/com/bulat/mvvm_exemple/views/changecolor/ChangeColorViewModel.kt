@@ -9,7 +9,7 @@ import ru.com.bulat.foundation.model.ErrorResult
 import ru.com.bulat.foundation.model.FinalResult
 import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.model.SuccessResult
-import ru.com.bulat.foundation.model.tasks.TasksFactory
+import ru.com.bulat.foundation.model.tasks.factories.TasksFactory
 import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
 import ru.com.bulat.foundation.navigator.Navigator
 import ru.com.bulat.foundation.uiactions.UiActions

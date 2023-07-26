@@ -2,7 +2,7 @@ package ru.com.bulat.mvvm_exemple.model.colors
 
 import android.graphics.Color
 import ru.com.bulat.foundation.model.tasks.Task
-import ru.com.bulat.foundation.model.tasks.TasksFactory
+import ru.com.bulat.foundation.model.tasks.factories.TasksFactory
 import ru.com.bulat.foundation.model.tasks.ThreadUtils
 
 /**
