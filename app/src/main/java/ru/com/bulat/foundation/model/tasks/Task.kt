@@ -1,7 +1,13 @@
 package ru.com.bulat.foundation.model.tasks
 
+import kotlinx.coroutines.suspendCancellableCoroutine
+import ru.com.bulat.foundation.model.ErrorResult
 import ru.com.bulat.foundation.model.FinalResult
+import ru.com.bulat.foundation.model.SuccessResult
 import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
+import ru.com.bulat.foundation.model.tasks.dispatchers.ImmediateDispatcher
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 typealias TaskListener<T> = (FinalResult<T>) -> Unit
 
@@ -38,5 +44,16 @@ interface Task<T> {
      * Cancel this task and remove listener assigned by [enqueue].
      */
     fun cancel()
+
+    suspend fun suspend() : T = suspendCancellableCoroutine {continuation ->
+        enqueue(ImmediateDispatcher()){
+            continuation.invokeOnCancellation { cancel() }
+            when (it) {
+                is SuccessResult -> continuation.resume(it.data)
+                is ErrorResult -> continuation.resumeWithException(it.exception)
+            }
+        }
+
+    }
 
 }
