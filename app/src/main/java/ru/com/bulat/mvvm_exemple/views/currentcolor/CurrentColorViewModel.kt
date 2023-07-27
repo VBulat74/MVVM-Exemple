@@ -1,18 +1,22 @@
 package ru.com.bulat.mvvm_exemple.views.currentcolor
 
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import ru.com.bulat.foundation.model.ErrorResult
 import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.model.SuccessResult
 import ru.com.bulat.foundation.model.takeSuccess
 import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
-import ru.com.bulat.foundation.navigator.Navigator
-import ru.com.bulat.foundation.uiactions.UiActions
+import ru.com.bulat.foundation.model.tasks.factories.TasksFactory
+import ru.com.bulat.foundation.sideeffects.dialogs.Dialogs
+import ru.com.bulat.foundation.sideeffects.intents.Intents
+import ru.com.bulat.foundation.sideeffects.permissions.Permissions
+import ru.com.bulat.foundation.sideeffects.resources.Resources
+import ru.com.bulat.foundation.sideeffects.toasts.Toasts
 import ru.com.bulat.foundation.views.BaseViewModel
 import ru.com.bulat.foundation.views.LiveResult
 import ru.com.bulat.foundation.views.MutableLiveResult
+import android.Manifest
+import ru.com.bulat.foundation.sideeffects.dialogs.plugin.DialogConfig
+import ru.com.bulat.foundation.sideeffects.navigator.Navigator
+import ru.com.bulat.foundation.sideeffects.permissions.plugin.PermissionStatus
 import ru.com.bulat.mvvm_exemple.R
 import ru.com.bulat.mvvm_exemple.model.colors.ColorListener
 import ru.com.bulat.mvvm_exemple.model.colors.ColorsRepository
@@ -21,9 +25,14 @@ import ru.com.bulat.mvvm_exemple.views.changecolor.ChangeColorFragment
 
 class CurrentColorViewModel(
     private val navigator: Navigator,
-    private val uiActions: UiActions,
+    private val toasts: Toasts,
+    private val resources: Resources,
+    private val permissions: Permissions,
+    private val intents: Intents,
+    private val dialogs: Dialogs,
+    private val tasksFactory: TasksFactory,
     private val colorsRepository: ColorsRepository,
-    dispatcher: Dispatcher,
+    dispatcher: Dispatcher
 ) : BaseViewModel(dispatcher) {
 
     private val _currentColor = MutableLiveResult<NamedColor>(PendingResult())
@@ -36,7 +45,7 @@ class CurrentColorViewModel(
     // --- example of listening results via model layer
 
     init {
-        colorsRepository.addListener (colorListener)
+        colorsRepository.addListener(colorListener)
         load()
     }
 
@@ -50,8 +59,8 @@ class CurrentColorViewModel(
     override fun onResult(result: Any) {
         super.onResult(result)
         if (result is NamedColor) {
-            val message = uiActions.getString(R.string.changed_color, result.name)
-            uiActions.toast(message)
+            val message = resources.getString(R.string.changed_color, result.name)
+            toasts.toast(message)
         }
     }
 
@@ -63,12 +72,49 @@ class CurrentColorViewModel(
         navigator.launch(screen)
     }
 
+    /**
+     * Example of using side-effect plugins
+     */
+    fun requestPermission() = tasksFactory.async<Unit> {
+        val permission = Manifest.permission.ACCESS_FINE_LOCATION
+        val hasPermission = permissions.hasPermissions(permission)
+        if (hasPermission) {
+            dialogs.show(createPermissionAlreadyGrantedDialog()).await()
+        } else {
+            when (permissions.requestPermission(permission).await()) {
+                PermissionStatus.GRANTED -> {
+                    toasts.toast(resources.getString(R.string.permissions_grated))
+                }
+                PermissionStatus.DENIED -> {
+                    toasts.toast(resources.getString(R.string.permissions_denied))
+                }
+                PermissionStatus.DENIED_FOREVER -> {
+                    if (dialogs.show(createAskForLaunchingAppSettingsDialog()).await()) {
+                        intents.openAppSettings()
+                    }
+                }
+            }
+        }
+    }.safeEnqueue()
 
     fun tryAgain() {
         load()
     }
 
-    private fun load(){
+    private fun load() {
         colorsRepository.getCurrentColor().into(_currentColor)
     }
+
+    private fun createPermissionAlreadyGrantedDialog() = DialogConfig(
+        title = resources.getString(R.string.dialog_permissions_title),
+        message = resources.getString(R.string.permissions_already_granted),
+        positiveButton = resources.getString(R.string.action_ok)
+    )
+
+    private fun createAskForLaunchingAppSettingsDialog() = DialogConfig(
+        title = resources.getString(R.string.dialog_permissions_title),
+        message = resources.getString(R.string.open_app_settings_message),
+        positiveButton = resources.getString(R.string.action_open),
+        negativeButton = resources.getString(R.string.action_cancel)
+    )
 }

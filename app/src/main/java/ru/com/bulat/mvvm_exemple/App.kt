@@ -2,34 +2,34 @@ package ru.com.bulat.mvvm_exemple
 
 import android.app.Application
 import ru.com.bulat.foundation.BaseApplication
-import ru.com.bulat.foundation.model.tasks.factories.ThreadTasksFactory
 import ru.com.bulat.foundation.model.tasks.ThreadUtils
 import ru.com.bulat.foundation.model.tasks.dispatchers.MainThreadDispatcher
 import ru.com.bulat.foundation.model.tasks.factories.ExecutorServiceTasksFactory
-import ru.com.bulat.foundation.model.tasks.factories.HandlerThreadTaskFactory
+import ru.com.bulat.foundation.model.tasks.factories.HandlerThreadTasksFactory
 import ru.com.bulat.mvvm_exemple.model.colors.InMemoryColorsRepository
 import java.util.concurrent.Executors
 
-class App : Application() , BaseApplication {
+/**
+ * Here we store instances of model layer classes.
+ */
+class App : Application(), BaseApplication {
 
-    //private val tasksFactory = ThreadTasksFactory()
-
-    //private val tasksFactory = ExecutorServiceTasksFactory(Executors.newCachedThreadPool())
-
+    // instances of all created task factories
     private val singleThreadExecutorTasksFactory = ExecutorServiceTasksFactory(Executors.newSingleThreadExecutor())
-    private val cashedThreadExecutorTasksFactory = ExecutorServiceTasksFactory(Executors.newCachedThreadPool())
-
-    private val handlerThreadTaskFactory = HandlerThreadTaskFactory()
+    private val handlerThreadTasksFactory = HandlerThreadTasksFactory()
+    private val cachedThreadPoolExecutorTasksFactory = ExecutorServiceTasksFactory(Executors.newCachedThreadPool())
 
     private val threadUtils = ThreadUtils.Default()
     private val dispatcher = MainThreadDispatcher()
 
     /**
-     * Place your repositories here, now we have only 1 repository
+     * Place your singleton scope dependencies here
      */
     override val singletonScopeDependencies: List<Any> = listOf(
-        cashedThreadExecutorTasksFactory,
-        dispatcher,
-        InMemoryColorsRepository(handlerThreadTaskFactory, threadUtils)
+        cachedThreadPoolExecutorTasksFactory, // task factory to be used in view-models
+        dispatcher, // dispatcher to be used in view-models
+
+        InMemoryColorsRepository(cachedThreadPoolExecutorTasksFactory, threadUtils)
     )
+
 }

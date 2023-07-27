@@ -1,11 +1,8 @@
 package ru.com.bulat.foundation
 
 import androidx.lifecycle.ViewModel
-import ru.com.bulat.foundation.navigator.IntermediateNavigator
-import ru.com.bulat.foundation.navigator.Navigator
 import ru.com.bulat.foundation.sideeffects.SideEffectMediator
 import ru.com.bulat.foundation.sideeffects.SideEffectMediatorsHolder
-import ru.com.bulat.foundation.uiactions.UiActions
 
 /**
  * Holder for side-effect mediators.

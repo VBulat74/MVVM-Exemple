@@ -21,61 +21,24 @@ class CurrentColorFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = FragmentCurrentColorBinding.inflate(inflater, container, false)
-
-        viewModel.currentColor.observe(viewLifecycleOwner) {result ->
+        viewModel.currentColor.observe(viewLifecycleOwner) { result ->
             renderSimpleResult(
                 root = binding.root,
                 result = result,
-                onSuccess = {binding.colorView.setBackgroundColor(it.value)}
-            )
-
-            /*renderResult(
-                root = binding.root,
-                result = result,
                 onSuccess = {
-                    binding.colorContainer.visibility =View.VISIBLE
-                    binding.changeColorButton.visibility = View.VISIBLE
-
                     binding.colorView.setBackgroundColor(it.value)
-                },
-                onError = {
-                    resultBinding.errorContainer.visibility = View.VISIBLE
-                },
-                onPending = {resultBinding.progressBar.visibility = View.VISIBLE}
-            )*/
-
-/*
-            when (result) {
-                is PendingResult -> {
-                    resultBinding.progressBar.visibility = View.VISIBLE
-                    resultBinding.errorContainer.visibility = View.GONE
-                    binding.colorContainer.visibility =View.GONE
-                    binding.changeColorButton.visibility = View.GONE
                 }
-                is ErrorResult -> {
-                    resultBinding.progressBar.visibility = View.GONE
-                    resultBinding.errorContainer.visibility = View.VISIBLE
-                    binding.colorContainer.visibility =View.GONE
-                    binding.changeColorButton.visibility = View.GONE
-                }
-                is SuccessResult -> {
-                    resultBinding.progressBar.visibility = View.GONE
-                    resultBinding.errorContainer.visibility = View.GONE
-                    binding.colorContainer.visibility =View.VISIBLE
-                    binding.changeColorButton.visibility = View.VISIBLE
-
-                    binding.colorView.setBackgroundColor(result.data.value)
-                }
-            }
-*/
-
+            )
         }
 
         binding.changeColorButton.setOnClickListener {
             viewModel.changeColor()
         }
+        binding.askPermissionsButton.setOnClickListener {
+            viewModel.requestPermission()
+        }
 
-        onTryAgain (binding.root) {
+        onTryAgain(binding.root) {
             viewModel.tryAgain()
         }
 

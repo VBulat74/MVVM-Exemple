@@ -8,12 +8,12 @@ import ru.com.bulat.foundation.model.tasks.ThreadUtils
 /**
  * Simple in-memory implementation of [ColorsRepository]
  */
-class InMemoryColorsRepository (
+class InMemoryColorsRepository(
     private val tasksFactory: TasksFactory,
-    private val threadUtils: ThreadUtils,
+    private val threadUtils: ThreadUtils
 ) : ColorsRepository {
 
-    private var currentColor : NamedColor = AVAILABLE_COLORS[0]
+    private var currentColor: NamedColor = AVAILABLE_COLORS[0]
 
     private val listeners = mutableSetOf<ColorListener>()
 
@@ -30,19 +30,19 @@ class InMemoryColorsRepository (
         return@async AVAILABLE_COLORS
     }
 
-    override fun getById(id: Long): Task<NamedColor>  = tasksFactory.async {
+    override fun getById(id: Long): Task<NamedColor> = tasksFactory.async {
         threadUtils.sleep(1000)
         return@async AVAILABLE_COLORS.first { it.id == id }
     }
 
-    override fun getCurrentColor(): Task<NamedColor>  = tasksFactory.async {
+    override fun getCurrentColor(): Task<NamedColor> = tasksFactory.async {
         threadUtils.sleep(1000)
         return@async currentColor
     }
 
-    override fun setCurrentColor(color: NamedColor): Task<Unit>  = tasksFactory.async {
+    override fun setCurrentColor(color: NamedColor): Task<Unit> = tasksFactory.async {
         threadUtils.sleep(1000)
-        if (currentColor != color){
+        if (currentColor != color) {
             currentColor = color
             listeners.forEach { it(color) }
         }

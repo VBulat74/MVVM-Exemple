@@ -48,14 +48,14 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         binding.cancelButton.setOnClickListener { viewModel.onCancelPressed() }
 
         viewModel.viewState.observe(viewLifecycleOwner) { result ->
-            renderSimpleResult(binding.root, result){ viewState ->
+            renderSimpleResult(binding.root, result) { viewState ->
                 adapter.items = viewState.colorsList
                 binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
                 binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
                 binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
             }
-
         }
+
         viewModel.screenTitle.observe(viewLifecycleOwner) {
             // if screen title is changed -> need to notify activity about updates
             notifyScreenUpdates()

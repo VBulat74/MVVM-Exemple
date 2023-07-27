@@ -22,15 +22,15 @@ interface ColorsRepository : Repository {
      */
     fun getById(id: Long): Task<NamedColor>
 
-    /*
-    * Get the current Color
+    /**
+     * Get the current selected color.
      */
-    fun getCurrentColor() : Task<NamedColor>
+    fun getCurrentColor(): Task<NamedColor>
 
-    /*
-    * Set the specified Color as current
-    * */
-    fun setCurrentColor(color: NamedColor) : Task<Unit>
+    /**
+     * Set the specified color as current.
+     */
+    fun setCurrentColor(color: NamedColor): Task<Unit>
 
     /**
      * Listen for the current color changes.
