@@ -1,12 +1,17 @@
 package ru.com.bulat.mvvm_exemple.model.colors
 
 import android.graphics.Color
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import ru.com.bulat.foundation.model.coroutines.IoDispatcher
 
 /**
  * Simple in-memory implementation of [ColorsRepository]
  */
-class InMemoryColorsRepository : ColorsRepository {
+class InMemoryColorsRepository (
+    private val ioDispatcher: IoDispatcher
+) : ColorsRepository {
 
     private var currentColor: NamedColor = AVAILABLE_COLORS[0]
 
@@ -20,22 +25,22 @@ class InMemoryColorsRepository : ColorsRepository {
         listeners -= listener
     }
 
-    override suspend fun getAvailableColors(): List<NamedColor> {
+    override suspend fun getAvailableColors(): List<NamedColor>  = withContext(ioDispatcher.value){
         delay(1000)
-        return AVAILABLE_COLORS
+        return@withContext AVAILABLE_COLORS
     }
 
-    override suspend fun getById(id: Long): NamedColor {
+    override suspend fun getById(id: Long): NamedColor = withContext(ioDispatcher.value){
         delay(1000)
-        return AVAILABLE_COLORS.first { it.id == id }
+        return@withContext AVAILABLE_COLORS.first { it.id == id }
     }
 
-    override suspend fun getCurrentColor(): NamedColor {
+    override suspend fun getCurrentColor(): NamedColor  = withContext(ioDispatcher.value) {
         delay(1000)
-        return currentColor
+        return@withContext currentColor
     }
 
-    override suspend fun setCurrentColor(color: NamedColor) {
+    override suspend fun setCurrentColor(color: NamedColor)  = withContext(ioDispatcher.value) {
         delay(1000)
         if (currentColor != color) {
             currentColor = color

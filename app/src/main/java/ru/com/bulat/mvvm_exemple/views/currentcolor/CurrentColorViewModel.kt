@@ -2,7 +2,6 @@ package ru.com.bulat.mvvm_exemple.views.currentcolor
 
 import android.Manifest
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.com.bulat.foundation.model.PendingResult
