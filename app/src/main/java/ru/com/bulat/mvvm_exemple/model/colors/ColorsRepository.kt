@@ -1,7 +1,6 @@
 package ru.com.bulat.mvvm_exemple.model.colors
 
 import ru.com.bulat.foundation.model.Repository
-import ru.com.bulat.foundation.model.tasks.Task
 
 typealias ColorListener = (NamedColor) -> Unit
 

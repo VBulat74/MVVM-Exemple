@@ -1,6 +1,5 @@
 package ru.com.bulat.foundation.sideeffects.dialogs
 
-import ru.com.bulat.foundation.model.tasks.Task
 import ru.com.bulat.foundation.sideeffects.dialogs.plugin.DialogConfig
 
 /**

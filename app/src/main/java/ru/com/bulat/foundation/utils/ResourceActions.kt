@@ -1,6 +1,6 @@
 package ru.com.bulat.foundation.utils
 
-import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
+import ru.com.bulat.foundation.model.dispatchers.Dispatcher
 
 typealias ResourceAction<T> = (T) -> Unit
 

@@ -1,4 +1,4 @@
-package ru.com.bulat.foundation.model.tasks.dispatchers
+package ru.com.bulat.foundation.model.dispatchers
 
 /**
  * Dispatchers run the specified block of code in some way.

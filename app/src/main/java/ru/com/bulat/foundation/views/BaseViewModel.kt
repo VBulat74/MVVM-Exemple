@@ -7,14 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.com.bulat.foundation.model.ErrorResult
-import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.model.Result
 import ru.com.bulat.foundation.model.SuccessResult
-import ru.com.bulat.foundation.model.tasks.Task
-import ru.com.bulat.foundation.model.tasks.TaskListener
-import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
 import ru.com.bulat.foundation.utils.Event
-import java.lang.Exception
 
 typealias LiveEvent<T> = LiveData<Event<T>>
 typealias MutableLiveEvent<T> = MutableLiveData<Event<T>>
@@ -27,8 +22,6 @@ typealias MediatorLiveResult<T> = MediatorLiveData<Result<T>>
  * Base class for all view-models.
  */
 open class BaseViewModel : ViewModel() {
-
-    private val tasks = mutableSetOf<Task<*>>()
 
     override fun onCleared() {
         super.onCleared()
@@ -69,8 +62,6 @@ open class BaseViewModel : ViewModel() {
     }
 
     private fun clearTasks() {
-        tasks.forEach { it.cancel() }
-        tasks.clear()
     }
 
 }

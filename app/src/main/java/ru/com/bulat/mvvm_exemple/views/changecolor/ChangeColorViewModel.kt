@@ -8,11 +8,8 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import ru.com.bulat.foundation.model.ErrorResult
-import ru.com.bulat.foundation.model.FinalResult
 import ru.com.bulat.foundation.model.PendingResult
 import ru.com.bulat.foundation.model.SuccessResult
-import ru.com.bulat.foundation.model.tasks.factories.TasksFactory
 import ru.com.bulat.foundation.sideeffects.navigator.Navigator
 import ru.com.bulat.foundation.sideeffects.resources.Resources
 import ru.com.bulat.foundation.sideeffects.toasts.Toasts
@@ -23,8 +20,7 @@ import ru.com.bulat.foundation.views.MutableLiveResult
 import ru.com.bulat.mvvm_exemple.R
 import ru.com.bulat.mvvm_exemple.model.colors.ColorsRepository
 import ru.com.bulat.mvvm_exemple.model.colors.NamedColor
-import ru.com.bulat.mvvm_exemple.views.changecolor.ChangeColorFragment.*
-import kotlin.Exception
+import ru.com.bulat.mvvm_exemple.views.changecolor.ChangeColorFragment.Screen
 
 class ChangeColorViewModel(
     screen: Screen,

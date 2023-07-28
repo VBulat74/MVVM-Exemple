@@ -1,10 +1,6 @@
-package ru.com.bulat.foundation.model.tasks.callback
-
-import ru.com.bulat.foundation.model.FinalResult
+package ru.com.bulat.foundation.model
 
 typealias CancelListener = () -> Unit
-
-typealias ExecutionListener<T> = (Emitter<T>) -> Unit
 
 /**
  * Emitter instance is passed to [CallbackTask.create] as an argument so you can use it

@@ -1,7 +1,7 @@
 package ru.com.bulat.foundation.sideeffects
 
-import ru.com.bulat.foundation.model.tasks.dispatchers.Dispatcher
-import ru.com.bulat.foundation.model.tasks.dispatchers.MainThreadDispatcher
+import ru.com.bulat.foundation.model.dispatchers.Dispatcher
+import ru.com.bulat.foundation.model.dispatchers.MainThreadDispatcher
 import ru.com.bulat.foundation.utils.ResourceActions
 
 /**

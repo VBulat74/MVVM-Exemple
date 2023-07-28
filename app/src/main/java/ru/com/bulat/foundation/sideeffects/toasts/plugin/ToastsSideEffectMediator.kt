@@ -2,7 +2,7 @@ package ru.com.bulat.foundation.sideeffects.toasts.plugin
 
 import android.content.Context
 import android.widget.Toast
-import ru.com.bulat.foundation.model.tasks.dispatchers.MainThreadDispatcher
+import ru.com.bulat.foundation.model.dispatchers.MainThreadDispatcher
 import ru.com.bulat.foundation.sideeffects.SideEffectMediator
 import ru.com.bulat.foundation.sideeffects.toasts.Toasts
 

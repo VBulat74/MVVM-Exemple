@@ -1,4 +1,4 @@
-package ru.com.bulat.foundation.model.tasks.dispatchers
+package ru.com.bulat.foundation.model.dispatchers
 
 import android.os.Handler
 import android.os.Looper
