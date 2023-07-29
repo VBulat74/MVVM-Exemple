@@ -57,7 +57,6 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.viewState.collect {result ->
                     renderSimpleResult(binding.root, result) {viewState ->
-/*
                         adapter.items = viewState.colorsList
                         binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
                         binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
@@ -65,12 +64,11 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
                         binding.saveProgressGroup.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
                         binding.saveProgressBar.progress = viewState.saveProgressPercentage
                         binding.savingPercentageTextView.text = viewState.saveProgressPercentageMessage
-*/
 
-                        adapter.items = viewState.colorsList
+                        /*adapter.items = viewState.colorsList
                         binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
                         binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
-                        binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
+                        binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE*/
                     }
                 }
             }

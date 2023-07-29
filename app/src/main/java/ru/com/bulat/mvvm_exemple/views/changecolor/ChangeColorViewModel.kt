@@ -2,14 +2,19 @@ package ru.com.bulat.mvvm_exemple.views.changecolor
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ru.com.bulat.foundation.model.*
+import ru.com.bulat.foundation.model.coroutines.EmptyProgress
+import ru.com.bulat.foundation.model.coroutines.PercentageProgress
+import ru.com.bulat.foundation.model.coroutines.Progress
+import ru.com.bulat.foundation.model.coroutines.getPercentage
+import ru.com.bulat.foundation.model.coroutines.isInProgress
 import ru.com.bulat.foundation.sideeffects.navigator.Navigator
-import ru.com.bulat.foundation.model.PendingResult
-import ru.com.bulat.foundation.model.Result
-import ru.com.bulat.foundation.model.SuccessResult
 import ru.com.bulat.foundation.sideeffects.resources.Resources
 import ru.com.bulat.foundation.sideeffects.toasts.Toasts
+import ru.com.bulat.foundation.utils.finiteShareIn
 import ru.com.bulat.foundation.views.BaseViewModel
 import ru.com.bulat.foundation.views.ResultFlow
 import ru.com.bulat.foundation.views.ResultMutableStateFlow
@@ -30,13 +35,15 @@ class ChangeColorViewModel(
     // input sources
     private val _availableColors: ResultMutableStateFlow<List<NamedColor>> = MutableStateFlow(PendingResult())
     private val _currentColorId = savedStateHandle.getStateFlow1("currentColorId", screen.currentColorId)
-    private val _saveInProgress = MutableStateFlow(false)
+    private val _instantSaveInProgress = MutableStateFlow<Progress>(EmptyProgress)
+    private val _sampledSaveInProgress = MutableStateFlow<Progress>(EmptyProgress)
 
     // main destination (contains merged values from _availableColors & _currentColorId & _saveInProgress)
     val viewState: ResultFlow<ViewState> = combine(
         _availableColors,
         _currentColorId,
-        _saveInProgress,
+        _instantSaveInProgress,
+        _sampledSaveInProgress,
         ::mergeSources
     )
 
@@ -60,25 +67,38 @@ class ChangeColorViewModel(
     }
 
     override fun onColorChosen(namedColor: NamedColor) {
-        if (_saveInProgress.value) return
+        if (_instantSaveInProgress.value.isInProgress()) return
         _currentColorId.value = namedColor.id
     }
 
     fun onSavePressed() = viewModelScope.launch {
         try {
-            _saveInProgress.value = true
+            _instantSaveInProgress.value = PercentageProgress.START
+            _sampledSaveInProgress.value = PercentageProgress.START
+
             val currentColorId = _currentColorId.value
             val currentColor = colorsRepository.getById(currentColorId)
 
-            // here we don't want to listen progress but only wait for operation completion
-            // so we use collect() without any inner block:
-            colorsRepository.setCurrentColor(currentColor).collect()
+            val flow = colorsRepository.setCurrentColor(currentColor).finiteShareIn(this)
+
+            val instantJob = async {
+                flow.collect { percentage -> _instantSaveInProgress.value = PercentageProgress(percentage) }
+            }
+
+            val sampledJob = async {
+                flow.sample(200) // emit the most actual progress every 200ms.
+                    .collect { percentage -> _sampledSaveInProgress.value = PercentageProgress(percentage) }
+            }
+
+            instantJob.await()
+            sampledJob.await()
 
             navigator.goBack(currentColor)
         } catch (e: Exception) {
             if (e !is CancellationException) toasts.toast(resources.getString(R.string.error_happened))
         } finally {
-            _saveInProgress.value = false
+            _instantSaveInProgress.value = EmptyProgress
+            _sampledSaveInProgress.value = EmptyProgress
         }
     }
 
@@ -94,24 +114,29 @@ class ChangeColorViewModel(
      * Transformation pure method for combining data from several input flows:
      * - the result of fetching colors list (Result<List<NamedColor>>)
      * - current selected color in RecyclerView (Long)
-     * - flag whether saving operation is in progress or not (Boolean)
+     * - [Progress] instance which indicates whether saving operation is in
+     *   progress or not
      * All values above are merged into one [ViewState] instance:
      * ```
      * Flow<Result<List<NamedColor>>> ---+
      * Flow<Long> -----------------------|--> Flow<Result<ViewState>>
-     * Flow<Boolean> --------------------+
+     * Flow<Progress> -------------------+
      * ```
      */
-    private fun mergeSources(colors: Result<List<NamedColor>>, currentColorId: Long, saveInProgress: Boolean): Result<ViewState> {
+    private fun mergeSources(colors: Result<List<NamedColor>>, currentColorId: Long,
+                             instantSaveInProgress: Progress, sampledSaveInProgress: Progress): Result<ViewState> {
         // map Result<List<NamedColor>> to Result<ViewState>
         return colors.map { colorsList ->
             ViewState(
                 // map List<NamedColor> to List<NamedColorListItem>
                 colorsList = colorsList.map { NamedColorListItem(it, currentColorId == it.id) },
 
-                showSaveButton = !saveInProgress,
-                showCancelButton = !saveInProgress,
-                showSaveProgressBar = saveInProgress
+                showSaveButton = !instantSaveInProgress.isInProgress(),
+                showCancelButton = !instantSaveInProgress.isInProgress(),
+                showSaveProgressBar = instantSaveInProgress.isInProgress(),
+
+                saveProgressPercentage = instantSaveInProgress.getPercentage(),
+                saveProgressPercentageMessage = resources.getString(R.string.percentage_value, sampledSaveInProgress.getPercentage())
             )
         }
     }
@@ -122,7 +147,10 @@ class ChangeColorViewModel(
         val colorsList: List<NamedColorListItem>,
         val showSaveButton: Boolean,
         val showCancelButton: Boolean,
-        val showSaveProgressBar: Boolean
+        val showSaveProgressBar: Boolean,
+
+        val saveProgressPercentage: Int,
+        val saveProgressPercentageMessage: String
     )
 
 }
