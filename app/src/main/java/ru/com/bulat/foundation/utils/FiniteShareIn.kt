@@ -28,7 +28,7 @@ fun <T> Flow<T>.finiteShareIn(coroutineScope: CoroutineScope): Flow<T> {
 
 // --- helper classes for materializing source flows
 
-private sealed class Element<T>
+private sealed class  Element<T>
 
 private class ItemElement<T>(
     val item: T
