@@ -3,11 +3,15 @@ package ru.com.bulat.foundation.views
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ru.com.bulat.foundation.model.ErrorResult
 import ru.com.bulat.foundation.model.Result
@@ -20,6 +24,9 @@ typealias MutableLiveEvent<T> = MutableLiveData<Event<T>>
 typealias LiveResult<T> = LiveData<Result<T>>
 typealias MutableLiveResult<T> = MutableLiveData<Result<T>>
 typealias MediatorLiveResult<T> = MediatorLiveData<Result<T>>
+
+typealias ResultFlow<T> = Flow<Result<T>>
+typealias ResultMutableStateFlow<T> = MutableStateFlow<Result<T>>
 
 /**
  * Base class for all view-models.
@@ -65,6 +72,36 @@ open class BaseViewModel : ViewModel() {
                 liveResult.postValue(ErrorResult(e))
             }
         }
+    }
+
+    fun <T> into(stateFlow: MutableStateFlow <Result<T>>, block : suspend () -> T) {
+
+        viewModelScope.launch {
+            try {
+                stateFlow.value = SuccessResult(block())
+            } catch (e: Exception) {
+                stateFlow.value = (ErrorResult(e))
+            }
+        }
+    }
+
+    fun <T> SavedStateHandle.getStateFlow1 (key : String, initialValue : T) : MutableStateFlow<T> {
+        val savedStateHandle = this
+        val mutableFlow = MutableStateFlow(savedStateHandle[key] ?: initialValue)
+
+        viewModelScope.launch {
+            mutableFlow.collect {
+                savedStateHandle[key] = it
+            }
+        }
+
+        viewModelScope.launch {
+            savedStateHandle.getLiveData<T>(key).asFlow().collect {
+                mutableFlow.value = it
+            }
+        }
+
+        return mutableFlow
     }
 
     private fun clearViewModelScope() {

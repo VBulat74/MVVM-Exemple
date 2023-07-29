@@ -5,7 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import ru.com.bulat.foundation.views.BaseFragment
 import ru.com.bulat.foundation.views.BaseScreen
 import ru.com.bulat.foundation.views.HasScreenTitle
@@ -47,12 +52,27 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         binding.saveButton.setOnClickListener { viewModel.onSavePressed() }
         binding.cancelButton.setOnClickListener { viewModel.onCancelPressed() }
 
-        viewModel.viewState.observe(viewLifecycleOwner) { result ->
-            renderSimpleResult(binding.root, result) { viewState ->
-                adapter.items = viewState.colorsList
-                binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
-                binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
-                binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.viewState.collect {result ->
+                    renderSimpleResult(binding.root, result) {viewState ->
+/*
+                        adapter.items = viewState.colorsList
+                        binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
+                        binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
+
+                        binding.saveProgressGroup.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
+                        binding.saveProgressBar.progress = viewState.saveProgressPercentage
+                        binding.savingPercentageTextView.text = viewState.saveProgressPercentageMessage
+*/
+
+                        adapter.items = viewState.colorsList
+                        binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
+                        binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
+                        binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
+                    }
+                }
             }
         }
 
