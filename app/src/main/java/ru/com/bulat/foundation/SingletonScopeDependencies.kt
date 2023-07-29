@@ -13,7 +13,7 @@ object SingletonScopeDependencies {
     @MainThread
     fun init (factory: SingletonsFactory) {
         if (this.factory != null) return
-            this.factory = factory
+        this.factory = factory
     }
 
     @MainThread
